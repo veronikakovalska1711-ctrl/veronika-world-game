@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veronika World: The Glitched Reality - Part 2</title>
+  <style>
+    :root {
+      --bg1: #0b1020;
+      --bg2: #1a1230;
+      --panel: rgba(22, 24, 36, 0.9);
+      --panel2: rgba(55, 42, 86, 0.9);
+      --text: #ecf3ff;
+      --muted: #a6b6d9;
+      --accent: #7ef2d5;
+      --accent2: #ff8ad9;
+      --warning: #ffd166;
+      --danger: #ff5a7a;
+      --success: #76ff9f;
+      --shadow: rgba(0, 0, 0, 0.42);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 16px;
+    }
+
+    .game {
+      width: min(1300px, 100%);
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .title {
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .status {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .screen {
+      display: none;
+      padding: 20px;
+      min-height: 750px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .intro {
+      background: linear-gradient(rgba(11,16,32,0.45), rgba(11,16,32,0.78)),
+        url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat;
+    }
+
+    .intro-content {
+      max-width: 900px;
+      margin: 60px auto 0;
+      background: rgba(8,12,22,0.72);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 28px 26px;
+      box-shadow: 0 18px 30px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      line-height: 1.08;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.02rem;
+      margin-bottom: 20px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), #50c4ff);
+      color: #0a1120;
+    }
+
+    .secondary {
+      background: linear-gradient(135deg, var(--accent2), #ffb86c);
+      color: #1a0f18;
+    }
+
+    .danger {
+      background: linear-gradient(135deg, #ff5378, #ff8a66);
+      color: white;
+    }
+
+    .world-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .world-card {
+      background: rgba(255,255,255,0.03);
+      border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .world-card:hover {
+      border-color: rgba(126,242,213,0.3);
+      background: rgba(126,242,213,0.05);
+    }
+
+    .world-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .world-emoji {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .world-name {
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+    }
+
+    .world-desc {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .battle-panel {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 16px;
+      min-height: 680px;
+    }
+
+    .left-panel, .mid-panel, .right-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .character-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), #5a8dff);
+      color: #081120;
+      font-size: 1.6rem;
+      font-weight: 800;
+      box-shadow: 0 16px 25px rgba(94, 180, 255, 0.22);
+    }
+
+    .nameplate h3 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .nameplate small {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .bars {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar {
+      background: rgba(255,255,255,0.05);
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .bar-fill {
+      height: 100%;
+      display: block;
+      border-radius: inherit;
+      transition: width 0.25s ease;
+    }
+
+    .hp { background: linear-gradient(90deg, #ff5a7a, #ff9b83); }
+    .expbar { background: linear-gradient(90deg, #8ef6c1, #73baff); }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .buffs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tag {
+      background: rgba(126, 242, 213, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(126, 242, 213, 0.3);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .storybox {
+      margin-top: 14px;
+      background: rgba(8, 11, 20, 0.45);
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 160px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .storybox h4 {
+      margin: 0 0 10px;
+      color: var(--warning);
+      letter-spacing: 0.04em;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    #storyText {
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre-line;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .enemy-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .enemy-name {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 0.98rem;
+    }
+
+    .enemy-type {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .skills-grid button {
+      padding: 9px 12px;
+      font-size: 0.88rem;
+    }
+
+    .log {
+      background: rgba(2, 5, 13, 0.35);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 12px;
+      height: 300px;
+      overflow-y: auto;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .log p {
+      margin: 0 0 6px;
+      color: var(--muted);
+    }
+
+    .log strong {
+      color: var(--text);
+    }
+
+    .enemy-effects {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .effect-tag {
+      background: rgba(255, 106, 154, 0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(255, 106, 154, 0.3);
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .vladislav-box {
+      background: rgba(94, 180, 255, 0.08);
+      border: 1px solid rgba(94, 180, 255, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+      color: #7fc3ff;
+    }
+
+    .vladislav-box h5 {
+      margin: 0 0 6px;
+      font-size: 0.82rem;
+    }
+
+    .vladislav-box p {
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .glitch-effect {
+      animation: glitch 0.3s ease-in-out;
+    }
+
+    @keyframes glitch {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-2px); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1200px) {
+      .battle-panel { grid-template-columns: 1fr 1fr; }
+      .right-panel { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 768px) {
+      .battle-panel { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .world-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <div class="topbar">
+      <div class="title">Veronika World: The Glitched Reality</div>
+      <div class="status">
+        <span id="phaseLabel">Intro</span>
+        <span id="locationLabel">—</span>
+        <span id="progressLabel">—</span>
+      </div>
+    </div>
+
+    <!-- INTRO SCREEN -->
+    <div id="introScreen" class="screen intro active">
+      <div class="intro-content">
+        <h1>The Glitched Reality</h1>
+        <div class="subtitle">
+          Days have passed since Veronika defeated the Yandere Virus and brought peace back to her world.
+          <br><br>
+          But today, the sky changed colors without reason.
+          <br>
+          Buildings are moving.
+          <br>
+          People don't remember her.
+          <br><br>
+          The old computer turns on by itself.
+          <br><br>
+          <strong>YANDERE_VIRUS_BACKUP.exe</strong>
+          <br><br>
+          "It wasn't completely deleted..." Vladislav's voice trembles.
+          <br><br>
+          The battle isn't over. It's just begun again.
+        </div>
+
+        <div class="btn-row">
+          <button class="primary" id="startBtn">Begin the Investigation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORLD MAP SCREEN -->
+    <div id="mapScreen" class="screen fade-in">
+      <h2 style="margin-top:0; color: var(--accent);">Explore Veronika World</h2>
+      <p style="color: var(--muted); margin-bottom: 20px;">The world is corrupted. Choose a location to investigate and fight enemies.</p>
+
+      <div class="world-grid" id="worldGrid"></div>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; margin-top: 20px;">
+        <h4 style="margin: 0 0 10px; color: var(--warning);">VLADISLAV'S INVESTIGATION</h4>
+        <p id="vladInfo" style="margin: 0; color: var(--muted); line-height: 1.6;"></p>
+      </div>
+    </div>
+
+    <!-- BATTLE SCREEN -->
+    <div id="battleScreen" class="screen">
+      <div class="battle-panel">
+        <!-- LEFT: Player & Story -->
+        <div class="left-panel">
+          <div class="character-box">
+            <div class="avatar">V</div>
+            <div class="nameplate">
+              <h3>Veronika</h3>
+              <small id="currentLocation">Location</small>
+            </div>
+          </div>
+
+          <div class="bars">
+            <div>
+              <div class="bar-label">
+                <span>HP</span>
+                <span id="hpText">120 / 120</span>
+              </div>
+              <div class="bar"><span id="hpBar" class="bar-fill hp" style="width:100%"></span></div>
+            </div>
+            <div>
+              <div class="bar-label">
+                <span>EXP</span>
+                <span id="expText">0 / 50</span>
+              </div>
+              <div class="bar"><span id="expBar" class="bar-fill expbar" style="width:0%"></span></div>
+            </div>
+          </div>
+
+          <div class="buffs" id="buffTags">
+            <span class="tag">Level 1</span>
+          </div>
+
+          <div class="storybox">
+            <h4>Dialogue</h4>
+            <p id="storyText"></p>
+          </div>
+
+          <div class="vladislav-box hidden" id="vladBox">
+            <h5>💙 Vladislav</h5>
+            <p id="vladText"></p>
+          </div>
+        </div>
+
+        <!-- MID: Enemy -->
+        <div class="mid-panel">
+          <div class="enemy-card">
+            <div class="enemy-name">
+              <span id="enemyName">Enemy</span>
+              <span id="enemyHpText">0 HP</span>
+            </div>
+            <div class="enemy-type" id="enemyType">Type</div>
+            <div class="bar">
+              <span id="enemyBar" class="bar-fill hp" style="width:0%"></span>
+            </div>
+
+            <div class="enemy-effects" id="enemyEffects"></div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <h4 style="margin: 0 0 12px; color: var(--accent); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.04em;">Skills</h4>
+            <div class="skills-grid">
+              <button class="primary" id="attackBtn">🎯 Attack</button>
+              <button class="secondary" id="powerBtn">⚡ Power Strike</button>
+              <button class="secondary" id="rainbowHealBtn">✨ Rainbow Heal</button>
+              <button class="secondary" id="glitchBreakBtn">⚙️ Glitch Break</button>
+              <button class="danger" id="resetBtn" disabled>💥 World Reset</button>
+              <button id="vladHelpBtn" style="background: linear-gradient(135deg, #7fc3ff, #5a8dff); color: white;">💙 Brother's Help</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Log -->
+        <div class="right-panel">
+          <h4 style="margin: 0 0 12px; color: var(--accent); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.04em;">Battle Log</h4>
+          <div class="log" id="battleLog"></div>
+          <button class="primary" style="width: 100%; margin-top: 12px;" id="backBtn">← Return to Map</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINAL BOSS SCREEN -->
+    <div id="bossScreen" class="screen">
+      <div class="battle-panel">
+        <div class="left-panel">
+          <div class="character-box">
+            <div class="avatar">V</div>
+            <div class="nameplate">
+              <h3>Veronika</h3>
+              <small>Final Confrontation</small>
+            </div>
+          </div>
+
+          <div class="bars">
+            <div>
+              <div class="bar-label">
+                <span>HP</span>
+                <span id="bossHpText">120 / 120</span>
+              </div>
+              <div class="bar"><span id="bossHpBar" class="bar-fill hp" style="width:100%"></span></div>
+            </div>
+          </div>
+
+          <div class="storybox">
+            <h4>The Truth</h4>
+            <p id="bossStoryText"></p>
+          </div>
+
+          <div class="vladislav-box">
+            <h5>💙 Vladislav</h5>
+            <p id="bossBrotherText">The barrier is stabilizing. Strike now!</p>
+          </div>
+        </div>
+
+        <div class="mid-panel">
+          <div class="enemy-card">
+            <div class="enemy-name">
+              <span id="bossName">World Glitch</span>
+              <span id="bossEnemyHpText">200 HP</span>
+            </div>
+            <div class="enemy-type">Reality Corruption / Entity</div>
+            <div class="bar">
+              <span id="bossEnemyBar" class="bar-fill hp" style="width:100%"></span>
+            </div>
+            <div class="enemy-effects" id="bossEffects"></div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <h4 style="margin: 0 0 12px; color: var(--accent); font-size: 0.88rem; text-transform: uppercase;">Final Skills</h4>
+            <div class="skills-grid">
+              <button class="primary" id="bossAttackBtn">🎯 Attack</button>
+              <button class="secondary" id="bossPowerBtn">⚡ Power Strike</button>
+              <button class="secondary" id="bossHealBtn">✨ Heal</button>
+              <button class="danger" id="bossFinalBtn">💥 Final Strike</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-panel">
+          <h4 style="margin: 0 0 12px; color: var(--accent); font-size: 0.88rem; text-transform: uppercase;">Battle Log</h4>
+          <div class="log" id="bossLog"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENDING SCREEN -->
+    <div id="endingScreen" class="screen intro">
+      <div class="intro-content">
+        <h1 id="endingTitle">Victory</h1>
+        <div class="subtitle" id="endingText">The world is saved.</div>
+        <div class="btn-row">
+          <button class="primary" id="endRestartBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      currentScreen: "intro",
+      currentLocation: null,
+      playerLevel: 1,
+      playerHP: 120,
+      playerMaxHP: 120,
+      playerATK: 18,
+      playerDEF: 6,
+      playerEXP: 0,
+      playerBuffs: 0,
+      playerSkillPower: 0,
+      resetCooldown: 0,
+      vladCount: 0,
+      locationsCleared: {},
+      currentEnemy: null,
+      battleLog: [],
+      enemyEffects: {},
+      worldGlitchHP: 200,
+      worldGlitchMaxHP: 200,
+      encounterCount: 0
+    };
+
+    const locations = [
+      {
+        id: "city",
+        name: "Glitched City",
+        emoji: "🏙️",
+        desc: "Buildings shift and disappear",
+        enemies: [
+          { name: "Yandere Glitch", type: "Fast attacker", hp: 38, atk: 14, reward: 16 },
+          { name: "Watcher", type: "Ranged sniper", hp: 44, atk: 16, reward: 18 }
+        ]
+      },
+      {
+        id: "forest",
+        name: "Corrupted Forest",
+        emoji: "🌲",
+        desc: "Trees twisted into unnatural shapes",
+        enemies: [
+          { name: "Corrupted Doll", type: "Defensive", hp: 52, atk: 11, reward: 20 },
+          { name: "Nature Glitch", type: "Poison attacker", hp: 48, atk: 13, reward: 19 }
+        ]
+      },
+      {
+        id: "school",
+        name: "Abandoned School",
+        emoji: "🏫",
+        desc: "Classrooms frozen in time",
+        enemies: [
+          { name: "Yandere Guardian", type: "Mini-boss", hp: 68, atk: 18, reward: 26 },
+          { name: "Student Phantom", type: "Memory echo", hp: 54, atk: 15, reward: 22 }
+        ]
+      },
+      {
+        id: "sky",
+        name: "Digital Sky",
+        emoji: "🌌",
+        desc: "Colors that shouldn't exist",
+        enemies: [
+          { name: "Computer Phantom", type: "Ability disabler", hp: 56, atk: 17, reward: 24 },
+          { name: "Data Wraith", type: "High damage", hp: 60, atk: 19, reward: 25 }
+        ]
+      },
+      {
+        id: "dimension",
+        name: "Broken Dimension",
+        emoji: "🧩",
+        desc: "Reality splits into fragments",
+        enemies: [
+          { name: "Reality Glitch", type: "Battlefield changer", hp: 62, atk: 18, reward: 28 },
+          { name: "Paradox Entity", type: "Copy attacker", hp: 70, atk: 20, reward: 30 }
+        ]
+      },
+      {
+        id: "computer",
+        name: "Original Computer",
+        emoji: "💻",
+        desc: "Where it all began",
+        enemies: [
+          { name: "System Virus", type: "Final guardian", hp: 80, atk: 22, reward: 35 }
+        ]
+      }
+    ];
+
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      const screen = document.querySelector(`#${name}Screen`);
+      if (screen) screen.classList.add("active");
+      state.currentScreen = name;
+    }
+
+    function updateTopbar() {
+      document.querySelector("#phaseLabel").textContent = state.currentScreen === "map" ? "Exploration" : state.currentScreen === "battle" ? "Battle" : "Boss";
+      document.querySelector("#locationLabel").textContent = state.currentLocation ? locations.find(l => l.id === state.currentLocation).name : "—";
+      const cleared = Object.values(state.locationsCleared).filter(v => v).length;
+      document.querySelector("#progressLabel").textContent = `${cleared}/6 locations cleared`;
+    }
+
+    function addBattleLog(msg) {
+      state.battleLog.unshift(msg);
+      state.battleLog = state.battleLog.slice(0, 20);
+      document.querySelector("#battleLog").innerHTML = state.battleLog.map(m => `<p>${m}</p>`).join("");
+    }
+
+    function addBossLog(msg) {
+      state.battleLog.unshift(msg);
+      state.battleLog = state.battleLog.slice(0, 20);
+      document.querySelector("#bossLog").innerHTML = state.battleLog.map(m => `<p>${m}</p>`).join("");
+    }
+
+    function updatePlayerStats() {
+      document.querySelector("#hpText").textContent = `${state.playerHP} / ${state.playerMaxHP}`;
+      document.querySelector("#hpBar").style.width = `${(state.playerHP / state.playerMaxHP) * 100}%`;
+      const nextLevelExp = 50 + (state.playerLevel - 1) * 30;
+      document.querySelector("#expText").textContent = `${state.playerEXP} / ${nextLevelExp}`;
+      document.querySelector("#expBar").style.width = `${(state.playerEXP / nextLevelExp) * 100}%`;
+
+      const tags = [
+        `Level ${state.playerLevel}`,
+        `ATK ${state.playerATK}`,
+        `DEF ${state.playerDEF}`,
+        `Buffs ×${state.playerBuffs}`
+      ];
+      document.querySelector("#buffTags").innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join("");
+    }
+
+    function updateEnemyUI() {
+      if (!state.currentEnemy) return;
+      document.querySelector("#enemyName").textContent = state.currentEnemy.name;
+      document.querySelector("#enemyHpText").textContent = `${state.currentEnemy.hp} / ${state.currentEnemy.maxHp} HP`;
+      document.querySelector("#enemyType").textContent = state.currentEnemy.type;
+      document.querySelector("#enemyBar").style.width = `${(state.currentEnemy.hp / state.currentEnemy.maxHp) * 100}%`;
+      
+      const effects = Object.entries(state.enemyEffects).filter(([_, v]) => v > 0).map(([k]) => {
+        const labels = { 
+          weakATK: "💔 Weak ATK", 
+          weakDEF: "🛡️ No Defense", 
+          healing: "💚 Regenerating",
+          copying: "📋 Copying",
+          disabling: "🚫 Disabling"
+        };
+        return `<span class="effect-tag">${labels[k] || k}</span>`;
+      }).join("");
+      document.querySelector("#enemyEffects").innerHTML = effects;
+    }
+
+    function startGame() {
+      state.playerLevel = 1;
+      state.playerHP = 120;
+      state.playerMaxHP = 120;
+      state.playerATK = 18;
+      state.playerDEF = 6;
+      state.playerEXP = 0;
+      state.playerBuffs = 0;
+      state.playerSkillPower = 0;
+      state.resetCooldown = 0;
+      state.vladCount = 0;
+      state.locationsCleared = {};
+      state.currentEnemy = null;
+      state.battleLog = [];
+      state.enemyEffects = {};
+      state.encounterCount = 0;
+
+      renderWorldMap();
+      showScreen("map");
+    }
+
+    function renderWorldMap() {
+      const grid = document.querySelector("#worldGrid");
+      grid.innerHTML = locations.map(loc => {
+        const cleared = state.locationsCleared[loc.id];
+        return `
+          <div class="world-card ${cleared ? 'disabled' : ''}" onclick="enterLocation('${loc.id}')">
+            <div class="world-emoji">${loc.emoji}</div>
+            <div class="world-name">${loc.name}</div>
+            <div class="world-desc">${loc.desc}</div>
+            ${cleared ? '<div style="margin-top: 8px; color: var(--success); font-size: 12px; font-weight: 700;">✓ CLEARED</div>' : ''}
+          </div>
+        `;
+      }).join("");
+
+      const vladText = [
+        "I've detected signal traces. The corruption is spreading across multiple locations.",
+        "The backup is fragmenting across the world. We need to cleanse each area.",
+        "The patterns are getting more complex. There's something beneath the virus...",
+        "These aren't just random errors. Something is *intentionally* corrupting.",
+        "Veronika... I've found something strange in the data. This source isn't artificial.",
+        "The messages... they're not from the virus. They're from something deeper."
+      ][Math.min(Object.values(state.locationsCleared).filter(v => v).length, 5)];
+
+      document.querySelector("#vladInfo").textContent = `💙 "` + vladText + `"`;
+      updateTopbar();
+    }
+
+    function enterLocation(locId) {
+      if (state.locationsCleared[locId]) return;
+      state.currentLocation = locId;
+      state.currentEnemy = null;
+      state.battleLog = [];
+      state.enemyEffects = {};
+
+      const loc = locations.find(l => l.id === locId);
+      document.querySelector("#currentLocation").textContent = loc.name;
+      document.querySelector("#storyText").textContent = `You enter the ${loc.name}.\n\nThe corruption is thick here. Enemies emerge from the glitches.`;
+
+      createEncounter();
+      showScreen("battle");
+      updatePlayerStats();
+    }
+
+    function createEncounter() {
+      const loc = locations.find(l => l.id === state.currentLocation);
+      const enemies = loc.enemies;
+      const enemy = enemies[Math.floor(Math.random() * enemies.length)];
+      
+      state.currentEnemy = {
+        ...enemy,
+        maxHp: enemy.hp
+      };
+      state.enemyEffects = {
+        weakATK: 0,
+        weakDEF: 0,
+        healing: 0,
+        copying: 0,
+        disabling: 0
+      };
+
+      addBattleLog(`${state.currentEnemy.name} appears!`);
+      updateEnemyUI();
+    }
+
+    function gainExp(amount) {
+      state.playerEXP += amount;
+      const nextExp = 50 + (state.playerLevel - 1) * 30;
+      
+      while (state.playerEXP >= nextExp) {
+        state.playerEXP -= nextExp;
+        state.playerLevel += 1;
+        state.playerATK += 4;
+        state.playerDEF += 2;
+        state.playerMaxHP += 18;
+        state.playerHP = state.playerMaxHP;
+        addBattleLog(`⭐ LEVEL UP! Veronika is now level ${state.playerLevel}!`);
+      }
+
+      updatePlayerStats();
+    }
+
+    function getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function processAction(action) {
+      if (!state.currentEnemy) return;
+
+      let damage = 0;
+      let msg = "";
+
+      if (action === "attack") {
+        damage = state.playerATK + getRandom(2, 7) - (state.enemyEffects.weakATK ? 5 : 0);
+        msg = `Veronika attacks for ${damage} damage.`;
+      } else if (action === "power") {
+        damage = state.playerATK + 12 + getRandom(3, 12) + state.playerSkillPower;
+        msg = `⚡ Power Strike! ${damage} damage dealt!`;
+      } else if (action === "heal") {
+        const heal = 22 + state.playerBuffs * 2 + getRandom(5, 12);
+        state.playerHP = Math.min(state.playerMaxHP, state.playerHP + heal);
+        msg = `✨ Rainbow Heal! Veronika recovers ${heal} HP.`;
+        addBattleLog(msg);
+        updatePlayerStats();
+        enemyTurn();
+        return;
+      } else if (action === "glitchbreak") {
+        Object.keys(state.enemyEffects).forEach(k => state.enemyEffects[k] = 0);
+        msg = `⚙️ Glitch Break! All enemy buffs removed!`;
+        addBattleLog(msg);
+        updateEnemyUI();
+        enemyTurn();
+        return;
+      } else if (action === "reset" && state.resetCooldown === 0) {
+        damage = 60 + state.playerATK + getRandom(10, 20);
+        state.resetCooldown = 3;
+        msg = `💥 WORLD RESET! ${damage} massive damage! (Cooldown: 3 turns)`;
+      } else if (action === "vladhelp") {
+        state.vladCount += 1;
+        state.playerBuffs += 1;
+        state.playerSkillPower += 6;
+        state.playerHP = Math.min(state.playerMaxHP, state.playerHP + 30);
+        msg = `💙 Vladislav stabilizes your power! You gain +1 buff, +6 skill power, +30 HP.`;
+        addBattleLog(msg);
+        document.querySelector("#vladBox").classList.add("hidden");
+        updatePlayerStats();
+        updateEnemyUI();
+        enemyTurn();
+        return;
+      }
+
+      if (damage > 0) {
+        state.currentEnemy.hp -= damage;
+        if (state.currentEnemy.hp <= 0) {
+          state.currentEnemy.hp = 0;
+          addBattleLog(`${msg}\n✓ ${state.currentEnemy.name} defeated!`);
+          gainExp(state.currentEnemy.reward);
+          state.locationsCleared[state.currentLocation] = true;
+          
+          setTimeout(() => {
+            const allCleared = Object.values(state.locationsCleared).filter(v => v).length === 6;
+            if (allCleared) {
+              startBossFight();
+            } else {
+              renderWorldMap();
+              showScreen("map");
+            }
+          }, 800);
+        } else {
+          addBattleLog(msg);
+          enemyTurn();
+        }
+      }
+
+      updateEnemyUI();
+      updatePlayerStats();
+      
+      if (state.resetCooldown > 0) state.resetCooldown -= 1;
+    }
+
+    function enemyTurn() {
+      if (!state.currentEnemy || state.currentEnemy.hp <= 0) return;
+
+      const baseDamage = state.currentEnemy.atk + getRandom(-2, 4) - state.playerDEF;
+      let damage = Math.max(3, baseDamage);
+
+      // Apply enemy effects
+      if (state.enemyEffects.copying && Math.random() < 0.5) {
+        addBattleLog(`📋 ${state.currentEnemy.name} copies your last move!`);
+        damage = Math.max(2, damage * 1.3);
+      }
+
+      if (state.enemyEffects.healing) {
+        state.currentEnemy.hp = Math.min(state.currentEnemy.maxHp, state.currentEnemy.hp + 8);
+        addBattleLog(`💚 ${state.currentEnemy.name} regenerates 8 HP.`);
+      }
+
+      // Reduce effect duration
+      Object.keys(state.enemyEffects).forEach(k => {
+        if (state.enemyEffects[k] > 0) state.enemyEffects[k] -= 1;
+      });
+
+      // Random enemy status effects
+      if (Math.random() < 0.25) {
+        const effects = Object.keys(state.enemyEffects);
+        const rndEffect = effects[Math.floor(Math.random() * effects.length)];
+        state.enemyEffects[rndEffect] = 2;
+        addBattleLog(`✨ ${state.currentEnemy.name} gains an effect!`);
+      }
+
+      state.playerHP = Math.max(0, state.playerHP - damage);
+      addBattleLog(`${state.currentEnemy.name} attacks for ${damage} damage!`);
+
+      if (state.playerHP <= 0) {
+        state.playerHP = 0;
+        addBattleLog(`💔 Veronika is defeated! Returning to map...`);
+        setTimeout(() => {
+          state.playerHP = state.playerMaxHP;
+          renderWorldMap();
+          showScreen("map");
+        }, 1200);
+      }
+
+      updatePlayerStats();
+      updateEnemyUI();
+    }
+
+    function startBossFight() {
+      state.currentEnemy = null;
+      state.battleLog = [];
+      state.worldGlitchHP = 200;
+      state.encounterCount = 0;
+
+      document.querySelector("#bossHpText").textContent = `${state.playerHP} / ${state.playerMaxHP}`;
+      document.querySelector("#bossHpBar").style.width = `${(state.playerHP / state.playerMaxHP) * 100}%`;
+      document.querySelector("#bossEnemyHpText").textContent = `${state.worldGlitchHP} / ${state.worldGlitchHP}`;
+      document.querySelector("#bossEnemyBar").style.width = `100%`;
+
+      addBossLog(`The world itself begins to corrupt around you.`);
+      addBossLog(`A massive entity emerges from the fractured data.`);
+      addBossLog(`This is not the virus. It is something far older.`);
+
+      document.querySelector("#bossStoryText").textContent = `Before you stands a being made of pure corruption.\n\nIt speaks without words, but you understand:\n\n"You thought you deleted me. I am what remains when worlds break. I am the glitch that was always here."`;
+
+      showScreen("boss");
+    }
+
+    function bossFight(action) {
+      if (state.worldGlitchHP <= 0) return;
+
+      let damage = 0;
+      let msg = "";
+
+      if (action === "attack") {
+        damage = state.playerATK + getRandom(4, 10);
+        msg = `🎯 Veronika strikes! ${damage} damage.`;
+      } else if (action === "power") {
+        damage = state.playerATK + 15 + getRandom(5, 15) + state.playerSkillPower;
+        msg = `⚡ Power Strike! ${damage} damage!`;
+      } else if (action === "heal") {
+        const heal = 30 + state.playerBuffs * 3 + getRandom(8, 15);
+        state.playerHP = Math.min(state.playerMaxHP, state.playerHP + heal);
+        msg = `✨ Heal! Recover ${heal} HP.`;
+        addBossLog(msg);
+        document.querySelector("#bossHpText").textContent = `${state.playerHP} / ${state.playerMaxHP}`;
+        document.querySelector("#bossHpBar").style.width = `${(state.playerHP / state.playerMaxHP) * 100}%`;
+        bossTurn();
+        return;
+      } else if (action === "final") {
+        damage = 80 + state.playerATK * 1.5 + state.playerSkillPower * 2;
+        msg = `💥 FINAL STRIKE! ${damage} devastation!`;
+      }
+
+      state.worldGlitchHP -= damage;
+
+      if (state.worldGlitchHP <= 0) {
+        state.worldGlitchHP = 0;
+        addBossLog(msg);
+        addBossLog(`The World Glitch trembles...`);
+        addBossLog(`Reality is stabilizing...`);
+        
+        setTimeout(() => {
+          endingSequence();
+        }, 1200);
+      } else {
+        addBossLog(msg);
+        bossTurn();
+      }
+
+      document.querySelector("#bossEnemyHpText").textContent = `${state.worldGlitchHP} / 200`;
+      document.querySelector("#bossEnemyBar").style.width = `${(state.worldGlitchHP / 200) * 100}%`;
+    }
+
+    function bossTurn() {
+      if (state.worldGlitchHP <= 0) return;
+
+      state.encounterCount += 1;
+      const attacks = [
+        { msg: "The glitch reverses your reality!", dmg: 25 },
+        { msg: "The arena transforms. You take 20 damage!", dmg: 20 },
+        { msg: "Fake enemies surround you! 22 damage!", dmg: 22 },
+        { msg: "Your skills flicker. Critical hit! 28 damage!", dmg: 28 }
+      ];
+
+      const attack = attacks[Math.floor(Math.random() * attacks.length)];
+      state.playerHP = Math.max(0, state.playerHP - attack.dmg);
+      addBossLog(attack.msg);
+
+      if (state.playerHP <= 0) {
+        addBossLog(`Veronika falls into the glitch...`);
+        setTimeout(() => {
+          state.playerHP = state.playerMaxHP;
+          startBossFight();
+        }, 1400);
+      }
+
+      document.querySelector("#bossHpText").textContent = `${state.playerHP} / ${state.playerMaxHP}`;
+      document.querySelector("#bossHpBar").style.width = `${(state.playerHP / state.playerMaxHP) * 100}%`;
+    }
+
+    function endingSequence() {
+      document.querySelector("#endingTitle").textContent = "To be continued...";
+      
+      const messages = [
+        "The world fades back into peace.",
+        "The corrupted shadows disappear.",
+        "The light of Veronika World slowly returns.",
+        "",
+        "Veronika and Vladislav stand in silence.",
+        "",
+        "The old computer sits before them.",
+        "It has been quiet for so long.",
+        "",
+        "Vladislav: \"It's gone.\"",
+        "Veronika: \"Finally...\"",
+        "",
+        "...",
+        "",
+        "BEEP.",
+        "",
+        "The screen turns black.",
+        "",
+        "Then one tiny message appears:",
+        "",
+        ">>> CONNECTION ESTABLISHED <<<",
+        "",
+        "Veronika: \"...Vladislav?\"",
+        "",
+        "The screen goes completely dark.",
+      ];
+
+      let index = 0;
+      const updateEnding = () => {
+        if (index < messages.length) {
+          document.querySelector("#endingText").textContent += (index > 0 ? "\n" : "") + messages[index];
+          index += 1;
+          setTimeout(updateEnding, 300);
+        }
+      };
+
+      updateEnding();
+      showScreen("ending");
+    }
+
+    // Event listeners
+    document.querySelector("#startBtn").addEventListener("click", startGame);
+    document.querySelector("#backBtn").addEventListener("click", () => {
+      renderWorldMap();
+      showScreen("map");
+    });
+
+    document.querySelector("#attackBtn").addEventListener("click", () => processAction("attack"));
+    document.querySelector("#powerBtn").addEventListener("click", () => processAction("power"));
+    document.querySelector("#rainbowHealBtn").addEventListener("click", () => processAction("heal"));
+    document.querySelector("#glitchBreakBtn").addEventListener("click", () => processAction("glitchbreak"));
+    document.querySelector("#resetBtn").addEventListener("click", () => state.resetCooldown === 0 && processAction("reset"));
+    document.querySelector("#vladHelpBtn").addEventListener("click", () => processAction("vladhelp"));
+
+    document.querySelector("#bossAttackBtn").addEventListener("click", () => bossFight("attack"));
+    document.querySelector("#bossPowerBtn").addEventListener("click", () => bossFight("power"));
+    document.querySelector("#bossHealBtn").addEventListener("click", () => bossFight("heal"));
+    document.querySelector("#bossFinalBtn").addEventListener("click", () => bossFight("final"));
+
+    document.querySelector("#endRestartBtn").addEventListener("click", startGame);
+
+    showScreen("intro");
+  </script>
+</body>
+</html>
